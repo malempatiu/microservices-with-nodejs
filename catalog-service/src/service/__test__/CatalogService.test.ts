@@ -49,4 +49,20 @@ describe('CatalogService', () => {
       await expect(catalogService.createProduct(mockPayload)).rejects.toThrow('Product already exist');
     })
   })
+
+  describe('updateProduct', () => {
+    test('should update product', async () => {
+      const mockProductId = faker.number.int({min: 1, max: 10});
+      const mockPayload = getMockProductRequestPayload({id: mockProductId});
+      const result = await catalogService.updateProduct(mockProductId, mockPayload);
+      expect(result).toMatchObject(mockPayload);
+    })
+
+    test('should throw error for no product', async () => {
+      jest.spyOn(mockRepo, 'update').mockRejectedValueOnce(new Error('Product does not exist!'))
+      const mockProductId = faker.number.int({min: 1, max: 10});
+      const mockPayload = getMockProductRequestPayload({id: mockProductId});
+      await expect(catalogService.updateProduct(mockProductId, mockPayload)).rejects.toThrow('Product does not exist!');
+    })
+  })
  })

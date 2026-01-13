@@ -23,8 +23,10 @@ class CatalogService {
 
   }
 
-  updateProduct = async (_id: number, _payload: any) => {
-
+  updateProduct = async (id: number, payload: any) => {
+    const result = await this.catalogRepo.update(id, payload);
+    // emit event to update record in Elastic search
+    return result;
   }
 
   deleteProduct = async (_id: number) => {
