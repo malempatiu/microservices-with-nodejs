@@ -7,23 +7,29 @@ class CatalogService {
     this.catalogRepo = catalogRepo;
   }
 
-  createProduct = async (payload: any) => {
+  createProduct = async (_payload: any) => {
+    const result = await this.catalogRepo.create(_payload);
+    if (!result?.id) {
+      throw new Error('Unable to create product!');
+    }
+    return result;
+  }
+
+  getProducts = async (_limit = 25, _offset = 0) => {
 
   }
 
-  getProducts = async (limit = 25, offset = 0) => {
+  getProduct = async (_id: number) => {
 
   }
 
-  getProduct = async (id: number) => {
+  updateProduct = async (_id: number, _payload: any) => {
 
   }
 
-  updateProduct = async (id: number, payload: any) => {
-
-  }
-
-  deleteProduct = async (id: number) => {
+  deleteProduct = async (_id: number) => {
 
   }
 }
+
+export {CatalogService};
