@@ -15,8 +15,9 @@ class CatalogService {
     return result;
   }
 
-  getProducts = async (_limit = 25, _offset = 0) => {
-
+  getProducts = async (limit = 25, offset = 0) => {
+    const result = this.catalogRepo.find(limit, offset);
+    return result;
   }
 
   getProduct = async (id: number) => {

@@ -9,9 +9,22 @@ class MockCatalogRepository implements ICatalogRepository {
     }
   }
 
-  find(): Promise<ProductModel[]> {
-    throw new Error("Method not implemented.");
+  find = async (): Promise<ProductModel[]> => {
+    return [{
+      id: 1,
+      name: 'iPhone',
+      stock: 10,
+      price: 1000,
+      description: 'Smart phone'
+    }, {
+      id: 1,
+      name: 'Laptop',
+      stock: 100,
+      price: 2000,
+      description: 'Macbook Pro'
+    }]
   }
+
   findById = async (id: number): Promise<ProductModel | null> => {
     return {
       id,

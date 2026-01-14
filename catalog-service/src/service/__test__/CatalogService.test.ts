@@ -77,4 +77,16 @@ describe('CatalogService', () => {
       await expect(catalogService.deleteProduct(1)).rejects.toThrow('Product not found!');
     })
   })
+
+  describe('getProduct', () => {
+    test('should throw error for no product', async () => {
+      jest.spyOn(mockRepo, 'findById').mockRejectedValueOnce(new Error('Product not found!'));
+      await (expect(catalogService.getProduct(1))).rejects.toThrow('Product not found!');
+    }) 
+
+    test('should return a product', async () => {
+      const result = await catalogService.getProduct(1);
+      expect(result.id).toEqual(1);
+    }) 
+  })
  })
