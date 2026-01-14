@@ -18,7 +18,8 @@ class CatalogService implements ICatalogService {
   }
 
   // Instead of this we will get products from ES
-  getProducts = async (limit = 25, offset = 0) => {
+  getProducts = async (page = 0, limit = 25) => {
+    const offset = (page - 1) * limit;
     const result = this.catalogRepo.find(limit, offset);
     return result;
   }
@@ -32,8 +33,8 @@ class CatalogService implements ICatalogService {
     return result;
   }
 
-  updateProduct = async (id: number, payload: any) => {
-    const result = await this.catalogRepo.update(id, payload);
+  updateProduct = async (id: number, dto: CreateProductDto) => {
+    const result = await this.catalogRepo.update(id, dto);
     // emit event to update record in Elastic search
     return result;
   }
