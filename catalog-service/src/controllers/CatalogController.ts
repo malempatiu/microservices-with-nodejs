@@ -21,6 +21,7 @@ class CatalogController {
     this.router.get(this.path, this.getProducts);
     this.router.get(`${this.path}/:id`, this.getProduct);
     this.router.put(`${this.path}/:id`, this.updateProduct);
+    this.router.delete(`${this.path}/:id`, this.deleteProduct);
   }
 
   createProduct = async (

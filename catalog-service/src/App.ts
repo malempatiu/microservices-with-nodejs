@@ -1,5 +1,6 @@
 import express, {Express} from 'express';
 import { IRouter } from './controllers/types';
+import { prisma } from './lib/prisma';
 
 class App {
   private readonly app: Express;
@@ -30,8 +31,9 @@ class App {
       console.log(`Server started on port:${this.port}`);
     })
 
-    process.on('uncaughtException', (err) => {
+    process.on('uncaughtException', async (err) => {
       console.log(err);
+      await prisma.$disconnect()
       process.exit(1);
     })
   }
