@@ -1,6 +1,7 @@
 import { CartCreateDto } from "@/dtos/CartDto";
 import { ICartRepository } from "@/interface/ICartRepository";
 import { ICartService } from "@/interface/ICartService";
+import { getProductDetails } from "@/utils/api";
 import { AppError } from "@/utils/error";
 import { STATUS_CODES } from "@/utils/status-codes";
 
@@ -12,11 +13,16 @@ class CartService implements ICartService {
   }
 
   createCart = async (dto: CartCreateDto) => {
-    const result = await this.cartRepo.create(dto);
-    if (!result?.id) {
-      throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to create cart!');
+    console.log(typeof(dto.productId))
+    const product = await getProductDetails(dto.productId);
+    if (product.stock < dto.quantity) {
+      throw new AppError(STATUS_CODES.BAD_REQUEST, 'Product out of stock!')
     }
-    return result;
+    // const result = await this.cartRepo.create(dto);
+    // if (!result?.id) {
+    //   throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to create cart!');
+    // }
+    return product;
   }
 
   getCart = async (id: number) => {

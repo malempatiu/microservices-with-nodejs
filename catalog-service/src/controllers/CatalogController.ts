@@ -50,6 +50,7 @@ class CatalogController {
   }
 
   getProduct = async (req: Request, res: Response, _next: NextFunction) => {
+    console.log(Number(req.params.id));
     const result = await this.catalogService.getProduct(Number(req.params.id));
     return res.status(200).json(result);
   }

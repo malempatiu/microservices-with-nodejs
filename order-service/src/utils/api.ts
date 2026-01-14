@@ -5,10 +5,10 @@ import { AppError } from "./error";
 import { STATUS_CODES } from "./status-codes";
 import { logger } from "./logger";
 
-export const GetProductDetails = async (productId: number) => {
+export const getProductDetails = async (productId: number) => {
   try {
     const response = await axios.get(
-      `${config.catalogUrl}/products/${productId}`
+      `${config.catalogUrl}/api/products/${productId}`
     );
     return response.data as ProductDto;
   } catch (error) {

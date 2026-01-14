@@ -8,7 +8,7 @@ class OrderController {
 
   constructor(_orderService: IOrderService) {
     this.router = express.Router();
-    this.path = '/cart';
+    this.path = '/order';
     //this.orderService = orderService;
     this.initializePaths();
   }

@@ -16,7 +16,7 @@ class CartController {
   }
 
   initializePaths = () => {
-    this.router.post(this.path, validate(CartRequestSchema), this.createCart);
+    this.router.post(this.path,  validate(CartRequestSchema), this.createCart);
     this.router.get(`${this.path}/:id`, this.getCart);
     this.router.put(`${this.path}/:id`, validate(CartRequestSchema), this.updateCart);
     this.router.delete(`${this.path}/:id`, this.deleteCart);
@@ -28,11 +28,12 @@ class CartController {
     _next: NextFunction
   ) => {
     const result = await this.cartService.createCart(req.body)
+    return res.status(201).json(result);
   }
 
  
-  getCart = async (_req: Request, _res: Response, _next: NextFunction) => {
-    
+  getCart = async (_req: Request, res: Response, _next: NextFunction) => {
+    return res.json({'hello': 'hello'});
   }
 
    updateCart = async (

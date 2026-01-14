@@ -2,7 +2,7 @@ import express, {Express} from 'express';
 import { IRouter } from './controllers/types';
 import { prisma } from './lib/prisma';
 import { ErrorMiddleware } from './middleware/ErrorMiddleware';
-import { logger } from './utils/logger';
+import { httpLogger, logger } from './utils/logger';
 
 class App {
   private readonly app: Express;
@@ -20,6 +20,7 @@ class App {
 
   initializeMiddleWares = () => {
     this.app.use(express.json());
+    this.app.use(httpLogger);
   }
 
   initializeRouters = (controllers: IRouter[]) => {
