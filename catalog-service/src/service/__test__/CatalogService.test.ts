@@ -1,4 +1,4 @@
-import { ICatalogRepository } from "@/interface/CatalogRepositoryInterface";
+import { ICatalogRepository } from "@/interface/ICatalogRepository";
 import { CatalogService } from "../CatalogService"
 import { MockCatalogRepository } from "@/repository/MockCatalogRepository";
 import {faker} from '@faker-js/faker';

@@ -1,12 +1,15 @@
+import { ICatalogService } from '@/interface/ICatalogService';
 import express, { NextFunction, Request, Response, Router } from 'express';
 
 class CatalogController {
   public readonly router: Router;
   private readonly path: string;
+  private readonly catalogService: ICatalogService;
 
-  constructor() {
+  constructor(catalogService: ICatalogService) {
     this.router = express.Router();
-    this.path = '/products'
+    this.path = '/products';
+    this.catalogService = catalogService;
     this.initializePaths();
   }
 
@@ -14,8 +17,9 @@ class CatalogController {
     this.router.post(this.path, this.createProduct);
   }
 
-  createProduct = async (_req: Request, _res: Response, _next: NextFunction) => {
-
+  createProduct = async (req: Request, res: Response, _next: NextFunction) => {
+    const result = await this.catalogService.createProduct(req.body);
+    return res.status(201).json(result);
   }
 
 }

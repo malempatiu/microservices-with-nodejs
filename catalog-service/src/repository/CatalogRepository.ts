@@ -1,4 +1,4 @@
-import { ICatalogRepository } from "@/interface/CatalogRepositoryInterface";
+import { ICatalogRepository } from "@/interface/ICatalogRepository";
 import { ProductModel } from "@/models/ProductModel";
 
 class CatalogRepository implements ICatalogRepository {
@@ -18,4 +18,6 @@ class CatalogRepository implements ICatalogRepository {
     throw new Error("Method not implemented.");
   }
 }
+
+export {CatalogRepository};
 

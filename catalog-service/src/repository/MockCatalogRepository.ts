@@ -1,4 +1,4 @@
-import { ICatalogRepository } from "@/interface/CatalogRepositoryInterface";
+import { ICatalogRepository } from "@/interface/ICatalogRepository";
 import { ProductModel } from "@/models/ProductModel";
 
 class MockCatalogRepository implements ICatalogRepository {

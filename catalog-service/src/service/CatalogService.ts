@@ -1,6 +1,7 @@
-import { ICatalogRepository } from "@/interface/CatalogRepositoryInterface";
+import { ICatalogRepository } from "@/interface/ICatalogRepository";
+import { ICatalogService } from "@/interface/ICatalogService";
 
-class CatalogService {
+class CatalogService implements ICatalogService {
   private readonly catalogRepo: ICatalogRepository;
 
   constructor (catalogRepo: ICatalogRepository) {
@@ -15,6 +16,7 @@ class CatalogService {
     return result;
   }
 
+  // Instead of this we will get products from ES
   getProducts = async (limit = 25, offset = 0) => {
     const result = this.catalogRepo.find(limit, offset);
     return result;
@@ -35,6 +37,7 @@ class CatalogService {
     return result;
   }
 
+  // Delete record from ES
   deleteProduct = async (id: number) => {
     const product = await this.getProduct(id);
     await this.catalogRepo.delete(product.id!);
