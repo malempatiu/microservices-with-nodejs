@@ -1,5 +1,7 @@
 import { IOrderRepository } from "@/interface/IOrderRepository";
 import { IOrderService } from "@/interface/IOrderService";
+import { AppError } from "@/utils/error";
+import { STATUS_CODES } from "@/utils/status-codes";
 
 class OrderService implements IOrderService {
   private readonly orderRepo: IOrderRepository;
@@ -11,7 +13,7 @@ class OrderService implements IOrderService {
   createOrder = async (dto: any) => {
     const result = await this.orderRepo.create(dto);
     if (!result?.id) {
-      throw new Error('Unable to create product!');
+      throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to create order!');
     }
     return result;
   }
@@ -20,7 +22,7 @@ class OrderService implements IOrderService {
   getOrder = async (id: number) => {
     const result = await this.orderRepo.findById(id);
     if (!result) {
-      throw new Error('Product not found!')
+      throw new AppError(STATUS_CODES.BAD_REQUEST, 'Product not found!')
     }
 
     return result;

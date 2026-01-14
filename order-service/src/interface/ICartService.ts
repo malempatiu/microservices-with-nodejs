@@ -1,8 +1,8 @@
-import { CreateProductDto } from "@/dtos/CartDto";
+import { CartDto } from "@/dtos/CartDto";
 
 export interface ICartService {
-  createCart(payload: CreateProductDto): Promise<any>;
+  createCart(payload: CartDto): Promise<any>;
   getCart(id: number): Promise<any>;
-  updateCart(id: number, payload: CreateProductDto): Promise<any>;
+  updateCart(id: number, payload: CartDto): Promise<any>;
   deleteCart(id: number): Promise<boolean>;
 }

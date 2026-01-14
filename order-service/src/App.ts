@@ -1,5 +1,7 @@
 import express, {Express} from 'express';
 import { IRouter } from './controllers/types';
+import { ErrorMiddleware } from './middleware/ErrorMiddleware';
+import { logger } from './utils/logger';
 
 class App {
   private readonly app: Express;
@@ -12,6 +14,7 @@ class App {
     this.port = port;
     this.initializeMiddleWares();
     this.initializeRouters(controllers);
+    this.initializeErrorMiddleware();
   }
 
   initializeMiddleWares = () => {
@@ -27,14 +30,18 @@ class App {
 
   startServer = () => {
     this.app.listen(this.port, () => {
-      console.log(`Server started on port:${this.port}`);
+      logger.info(`Server started on port:${this.port}`);
     })
 
     process.on('uncaughtException', async (err) => {
-      console.log(err);
+      logger.error(err);
       process.exit(1);
     })
   }
+
+   private initializeErrorMiddleware = () => {
+    this.app.use(ErrorMiddleware.handler);
+  };
 }
 
 export {App};

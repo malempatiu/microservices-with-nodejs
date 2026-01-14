@@ -2,11 +2,12 @@ import { ICartRepository } from "@/interface/ICartRepository";
 import { CartModel } from "@/models/CartModel";
 import {dDB} from "@/lib/drizzle";
 import { cartTable } from "@/db/schema/cart";
+import { CartCreateDto } from "@/dtos/CartDto";
 
 class CartRepository implements ICartRepository {  
-  create = async (customerId: number): Promise<CartModel> => {
+  create = async (data: CartCreateDto): Promise<CartModel> => {
     const result = await dDB.insert(cartTable).values({
-      customerId
+      
     }).returning({cartId: cartTable.id});
 
     return {}

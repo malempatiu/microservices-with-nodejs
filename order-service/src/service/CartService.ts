@@ -1,5 +1,8 @@
+import { CartCreateDto } from "@/dtos/CartDto";
 import { ICartRepository } from "@/interface/ICartRepository";
 import { ICartService } from "@/interface/ICartService";
+import { AppError } from "@/utils/error";
+import { STATUS_CODES } from "@/utils/status-codes";
 
 class CartService implements ICartService {
   private readonly cartRepo: ICartRepository;
@@ -8,10 +11,10 @@ class CartService implements ICartService {
     this.cartRepo = cartRepo;
   }
 
-  createCart = async (dto: any) => {
+  createCart = async (dto: CartCreateDto) => {
     const result = await this.cartRepo.create(dto);
     if (!result?.id) {
-      throw new Error('Unable to create product!');
+      throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to create cart!');
     }
     return result;
   }
@@ -19,7 +22,7 @@ class CartService implements ICartService {
   getCart = async (id: number) => {
     const result = await this.cartRepo.findById(id);
     if (!result) {
-      throw new Error('Product not found!')
+      throw new AppError(STATUS_CODES.BAD_REQUEST, 'Product not found!')
     }
 
     return result;
