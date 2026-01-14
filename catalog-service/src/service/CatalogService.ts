@@ -19,8 +19,13 @@ class CatalogService {
 
   }
 
-  getProduct = async (_id: number) => {
+  getProduct = async (id: number) => {
+    const result = await this.catalogRepo.findById(id);
+    if (!result) {
+      throw new Error('Product not found!')
+    }
 
+    return result;
   }
 
   updateProduct = async (id: number, payload: any) => {
@@ -29,8 +34,10 @@ class CatalogService {
     return result;
   }
 
-  deleteProduct = async (_id: number) => {
-
+  deleteProduct = async (id: number) => {
+    const product = await this.getProduct(id);
+    await this.catalogRepo.delete(product.id!);
+    return true;
   }
 }
 

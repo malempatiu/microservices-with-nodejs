@@ -12,8 +12,14 @@ class MockCatalogRepository implements ICatalogRepository {
   find(): Promise<ProductModel[]> {
     throw new Error("Method not implemented.");
   }
-  findById(_id: number): Promise<ProductModel | null> {
-    throw new Error("Method not implemented.");
+  findById = async (id: number): Promise<ProductModel | null> => {
+    return {
+      id,
+      name: 'iPhone',
+      stock: 10,
+      price: 1000,
+      description: 'Smart phone'
+    }
   }
 
   update = async (id: number, product: ProductModel): Promise<ProductModel> => {
@@ -23,8 +29,8 @@ class MockCatalogRepository implements ICatalogRepository {
     }
   }
 
-  delete(_id: number): Promise<void> {
-    throw new Error("Method not implemented.");
+  delete = async (id: number): Promise<void> => {
+    console.log(`Product with id: ${id} deleted`)
   }
 }
 
