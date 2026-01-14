@@ -1,7 +1,7 @@
 import { ICatalogService } from '@/interface/ICatalogService';
 import express, { NextFunction, Request, Response, Router } from 'express';
 import { validate } from '@/middleware/validate';
-import { CreateProductRequestSchema, CreateProductDto } from '@/dtos/ProductDto';
+import { CreateProductRequestSchema } from '@/dtos/ProductDto';
 import { PaginationQueryParams } from '@/dtos/PaginationQueryDto';
 
 class CatalogController {

@@ -2,20 +2,36 @@ import { ICatalogRepository } from "@/interface/ICatalogRepository";
 import { ProductModel } from "@/models/ProductModel";
 
 class CatalogRepository implements ICatalogRepository {
-  create(product: ProductModel): Promise<ProductModel> {
-    throw new Error("Method not implemented.");
+  create = async (product: ProductModel): Promise<ProductModel> => {
+    return {
+      id: 1,
+      ...product
+    }
   }
-  find(): Promise<ProductModel[]> {
-    throw new Error("Method not implemented.");
+
+  find = async (): Promise<ProductModel[]> => {
+    return []
   }
-  findById(id: number): Promise<ProductModel | null> {
-    throw new Error("Method not implemented.");
+
+  findById = async (id: number): Promise<ProductModel | null> => {
+    return {
+      id,
+      name: 'iPhone',
+      price: 1000,
+      stock: 2,
+      description: 'Smart phone'
+    }
   }
-  update(id: number, product: ProductModel): Promise<ProductModel> {
-    throw new Error("Method not implemented.");
+
+  update = async (id: number, product: ProductModel): Promise<ProductModel> => {
+    return {
+      id,
+      ...product
+    }
   }
-  delete(id: number): Promise<void> {
-    throw new Error("Method not implemented.");
+
+  delete = async (id: number): Promise<void> => {
+    console.log(`Product with id: ${id} deleted`);
   }
 }
 
