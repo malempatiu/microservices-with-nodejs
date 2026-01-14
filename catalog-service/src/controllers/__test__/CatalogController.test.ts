@@ -26,6 +26,15 @@ describe('CatalogController', () => {
 }).router);
 
   describe('POST /products', () => {
+     test('should not create product with invalid data', async () => {
+      const response = await request(app)
+        .post('/api/products')
+        .send({...mockRequest, price: 0})
+        .set('Accept', 'application/json');
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Validation failed');
+    })
+
     test('should create product successfully', async () => {
       const response = await request(app)
         .post('/api/products')

@@ -1,3 +1,4 @@
+import { CreateProductDto } from "@/dtos/ProductDto";
 import { ICatalogRepository } from "@/interface/ICatalogRepository";
 import { ICatalogService } from "@/interface/ICatalogService";
 
@@ -8,8 +9,8 @@ class CatalogService implements ICatalogService {
     this.catalogRepo = catalogRepo;
   }
 
-  createProduct = async (_payload: any) => {
-    const result = await this.catalogRepo.create(_payload);
+  createProduct = async (dto: CreateProductDto) => {
+    const result = await this.catalogRepo.create(dto);
     if (!result?.id) {
       throw new Error('Unable to create product!');
     }
