@@ -1,4 +1,4 @@
-import { CartCreateDto } from "@/dtos/CartDto";
+import { CartCreateRequestDto } from "@/dtos/CartDto";
 import { ICartRepository } from "@/interface/ICartRepository";
 import { ICartService } from "@/interface/ICartService";
 import { getProductDetails } from "@/utils/api";
@@ -12,17 +12,20 @@ class CartService implements ICartService {
     this.cartRepo = cartRepo;
   }
 
-  createCart = async (dto: CartCreateDto) => {
-    console.log(typeof(dto.productId))
+  createCart = async (dto: CartCreateRequestDto) => {
     const product = await getProductDetails(dto.productId);
     if (product.stock < dto.quantity) {
       throw new AppError(STATUS_CODES.BAD_REQUEST, 'Product out of stock!')
     }
-    // const result = await this.cartRepo.create(dto);
-    // if (!result?.id) {
-    //   throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to create cart!');
-    // }
-    return product;
+    const result = await this.cartRepo.create({
+      ...dto,
+      price: product.price,
+      name: product.name
+    });
+    if (!result?.id) {
+       throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to create cart!');
+    }
+    return result;
   }
 
   getCart = async (id: number) => {
@@ -34,16 +37,26 @@ class CartService implements ICartService {
     return result;
   }
 
-  updateCart = async (id: number, dto: any) => {
-    const result = await this.cartRepo.update(id, dto);
-    // emit event to update record in Elastic search
-    return result;
+   deleteCart = async (id: number) => {
+    const cart = await this.getCart(id);
+    await this.cartRepo.delete(cart.id);
+    return true;
   }
 
-  // Delete record from ES
-  deleteCart = async (id: number) => {
-    const product = await this.getCart(id);
-    await this.cartRepo.delete(product.id!);
+  updateCartItem = async (_cartId: number, itemId: number, dto: CartCreateRequestDto) => {
+    const product = await getProductDetails(dto.productId);
+    if (product.stock < dto.quantity) {
+      throw new AppError(STATUS_CODES.BAD_REQUEST, 'Product out of stock!')
+    }
+    await this.cartRepo.updateItem(itemId, {
+      ...dto,
+      price: product.price,
+      name: product.name
+    });
+  }
+
+  deleteCartItem = async (id: number) => {
+    await this.cartRepo.deleteItem(id);
     return true;
   }
 }

@@ -1,3 +1,4 @@
+import { CartItem } from "@/db/schema/cart";
 import { z } from "zod";
 
 export const CartRequestSchema = z.object({
@@ -6,4 +7,15 @@ export const CartRequestSchema = z.object({
   quantity: z.int("Customer Id is required").min(1),
 });
 
-export type CartCreateDto = z.infer<typeof CartRequestSchema>;
+export type CartCreateRequestDto = z.infer<typeof CartRequestSchema>;
+
+export type CartCreateDto = {
+  price: number;
+  name: string;
+} & CartCreateRequestDto;
+
+export type CartDto = {
+  id: number,
+  customerId: number,
+  cartItems: CartItem[];
+}
