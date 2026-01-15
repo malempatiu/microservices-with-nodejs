@@ -1,10 +1,10 @@
-import { CartDto } from "@/dtos/CartDto";
-import { CartModel } from "@/models/CartModel";
+import { CartCreateDto, CartDto } from "@/dtos/CartDto";
+
 
 export interface ICartRepository {
-  create(data: CartDto): Promise<CartModel>;
-  find(limit: number, offset: number): Promise<CartModel[]>;
-  findById(id: number): Promise<CartModel | null>;
-  update(id: number, data: any): Promise<CartModel>;
+  create(cartItem: CartCreateDto): Promise<CartDto>;
+  find(limit: number, offset: number): Promise<CartDto[]>;
+  findById(id: number): Promise<CartDto | null>;
+  update(id: number, data: CartCreateDto): Promise<CartDto>;
   delete(id: number): Promise<void>;
 }
