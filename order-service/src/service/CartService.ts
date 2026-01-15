@@ -37,16 +37,26 @@ class CartService implements ICartService {
     return result;
   }
 
-  updateCart = async (id: number, dto: any) => {
-    const result = await this.cartRepo.update(id, dto);
-    // emit event to update record in Elastic search
-    return result;
+   deleteCart = async (id: number) => {
+    const cart = await this.getCart(id);
+    await this.cartRepo.delete(cart.id);
+    return true;
   }
 
-  // Delete record from ES
-  deleteCart = async (id: number) => {
-    const product = await this.getCart(id);
-    await this.cartRepo.delete(product.id!);
+  updateCartItem = async (_cartId: number, itemId: number, dto: CartCreateRequestDto) => {
+    const product = await getProductDetails(dto.productId);
+    if (product.stock < dto.quantity) {
+      throw new AppError(STATUS_CODES.BAD_REQUEST, 'Product out of stock!')
+    }
+    await this.cartRepo.updateItem(itemId, {
+      ...dto,
+      price: product.price,
+      name: product.name
+    });
+  }
+
+  deleteCartItem = async (id: number) => {
+    await this.cartRepo.deleteItem(id);
     return true;
   }
 }

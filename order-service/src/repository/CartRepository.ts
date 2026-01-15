@@ -1,10 +1,11 @@
 import { ICartRepository } from "@/interface/ICartRepository";
 import {dDB} from "@/db/drizzle";
-import { cartItemsTable, cartTable } from "@/db/schema/cart";
+import { CartItem, cartItemsTable, cartTable } from "@/db/schema/cart";
 import { CartCreateDto, CartDto } from "@/dtos/CartDto";
 import { AppError } from "@/utils/error";
 import { STATUS_CODES } from "@/utils/status-codes";
 import { logger } from "@/utils/logger";
+import { eq } from "drizzle-orm";
 
 class CartRepository implements ICartRepository {  
   create = async (cartDto: CartCreateDto): Promise<CartDto> => {
@@ -44,7 +45,7 @@ class CartRepository implements ICartRepository {
     }
   }
 
-  findById = async (id: number): Promise<CartDto | null> => {
+  findById = async (id: number): Promise<CartDto> => {
     const result = await dDB.query.cartTable.findFirst(
       {
         where: (cartTable, {eq}) => (eq(cartTable.id, id)),
@@ -54,15 +55,57 @@ class CartRepository implements ICartRepository {
       }
     )
 
-    return (result ?? {}) as CartDto;
+    if (!result) {
+      logger.error('Cart not found!');
+      throw new AppError(STATUS_CODES.BAD_REQUEST, 'Cart not found!');
+    }
+
+    return result as CartDto;
   }
 
-  update = async (_id: number, _data: CartCreateDto): Promise<CartDto> => {
-    return {} as CartDto;
+  findItem = async (id: number): Promise<CartItem> => {
+    const result = await dDB.query.cartItemsTable.findFirst(
+      {
+        where: (cartTable, {eq}) => (eq(cartTable.id, id)),
+      }
+    )
+
+    if (!result) {
+      logger.error('Cart item not found!');
+      throw new AppError(STATUS_CODES.BAD_REQUEST, 'Cart item not found!');
+    }
+
+    return result as CartItem;
   }
 
-  delete = async (_id: number): Promise<void> => {
-    
+  updateItem = async (id: number, dto: CartCreateDto): Promise<void> => {
+    const item = await this.findItem(id);
+    const result = await dDB.update(cartItemsTable).set({
+      quantity: dto.quantity
+    }).where(eq(cartItemsTable.id, item.id)).returning();
+
+    if (!result.length) {
+      logger.error('Unable to update cart item');
+      throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to update cart item!');
+    }
+  }
+
+  deleteItem = async (id: number): Promise<void> => {
+    const item = await this.findItem(id);
+    const result = await dDB.delete(cartItemsTable).where((eq(cartItemsTable.id, id=item.id))).returning();
+    if (!result.length) {
+      logger.error('Unable to delete cart item');
+      throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to delete cart item!');
+    }
+  }
+
+   delete = async (id: number): Promise<void> => {
+    const cart = await this.findById(id);
+    const result = await dDB.delete(cartTable).where((eq(cartTable.id, id=cart.id))).returning();
+    if (!result.length) {
+      logger.error('Unable to delete cart');
+      throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to delete cart!');
+    }
   }
 }
 

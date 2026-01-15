@@ -18,8 +18,9 @@ class CartController {
   initializePaths = () => {
     this.router.post(this.path,  validate(CartRequestSchema), this.createCart);
     this.router.get(`${this.path}/:id`, this.getCart);
-    this.router.put(`${this.path}/:id`, validate(CartRequestSchema), this.updateCart);
     this.router.delete(`${this.path}/:id`, this.deleteCart);
+    this.router.put(`${this.path}/:id/item/:itemId`, validate(CartRequestSchema), this.updateCartItem);
+    this.router.delete(`${this.path}/:id/item/:itemId`, this.deleteCartItem);
   }
 
   createCart = async (
@@ -37,17 +38,30 @@ class CartController {
     return res.status(200).json(result);
   }
 
-   updateCart = async (
-    _req: Request, 
-    _res: Response, 
-    _next: NextFunction
-  ) => {
-    
+  deleteCart = async (req: Request, res: Response, _next: NextFunction) => {
+    await this.cartService.deleteCart(Number(req.params.id));
+    return res.status(204).json({'message': 'Success'});
   }
 
-  deleteCart = async (_req: Request, _res: Response, _next: NextFunction) => {
-    
+  deleteCartItem = async (req: Request, res: Response, _next: NextFunction) => {
+    await this.cartService.deleteCartItem(Number(req.params.itemId));
+    return res.status(204).json({'message': 'Success'});
   }
+
+   updateCartItem = async (
+    req: Request, 
+    res: Response, 
+    _next: NextFunction
+  ) => {
+    await this.cartService.updateCartItem(
+      Number(req.params.id), 
+      Number(req.params.itemId),
+      req.body
+    )
+    return res.status(201).json({'message': 'success'});
+  }
+
+  
 
 }
 
