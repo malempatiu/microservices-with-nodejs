@@ -32,8 +32,9 @@ class CartController {
   }
 
  
-  getCart = async (_req: Request, res: Response, _next: NextFunction) => {
-    return res.json({'hello': 'hello'});
+  getCart = async (req: Request, res: Response, _next: NextFunction) => {
+    const result = await this.cartService.getCart(Number(req.params.id));
+    return res.status(200).json(result);
   }
 
    updateCart = async (

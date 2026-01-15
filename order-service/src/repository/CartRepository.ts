@@ -1,5 +1,5 @@
 import { ICartRepository } from "@/interface/ICartRepository";
-import {dDB} from "@/lib/drizzle";
+import {dDB} from "@/db/drizzle";
 import { cartItemsTable, cartTable } from "@/db/schema/cart";
 import { CartCreateDto, CartDto } from "@/dtos/CartDto";
 import { AppError } from "@/utils/error";
@@ -8,22 +8,23 @@ import { logger } from "@/utils/logger";
 
 class CartRepository implements ICartRepository {  
   create = async (cartDto: CartCreateDto): Promise<CartDto> => {
-    const [{id: cartId}] = await dDB.insert(cartTable).values({
+    const [cart] = await dDB.insert(cartTable).values({
       customerId: cartDto.customerId
     }).onConflictDoUpdate({
       target: cartTable.customerId,
       set: { updatedAt: new Date() },
     }).returning({
-      id: cartTable.id
+      id: cartTable.id,
+      customerId: cartTable.customerId
     });
 
-    if (!cartId) {
+    if (!cart) {
       logger.error('Unable to create cart');
       throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to create cart!');
     }
 
     const result = await dDB.insert(cartItemsTable).values({
-      cartId,
+      cartId: cart.id,
       productId: cartDto.productId,
       itemName: cartDto.name,
       price: String(cartDto.price),
@@ -37,17 +38,23 @@ class CartRepository implements ICartRepository {
 
     const cartItem = result[0];
     return {
-      id: cartId,
-      cartItem: [cartItem]
+      id: cart.id,
+      customerId: cart.customerId,
+      cartItems: [cartItem]
     }
   }
 
-  find = async (): Promise<CartDto[]> => {
-    return []
-  }
+  findById = async (id: number): Promise<CartDto | null> => {
+    const result = await dDB.query.cartTable.findFirst(
+      {
+        where: (cartTable, {eq}) => (eq(cartTable.id, id)),
+        with: {
+          cartItems: true,
+        }
+      }
+    )
 
-  findById = async (_id: number): Promise<CartDto | null> => {
-    return null
+    return (result ?? {}) as CartDto;
   }
 
   update = async (_id: number, _data: CartCreateDto): Promise<CartDto> => {

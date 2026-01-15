@@ -16,5 +16,6 @@ export type CartCreateDto = {
 
 export type CartDto = {
   id: number,
-  cartItem: CartItem[];
+  customerId: number,
+  cartItems: CartItem[];
 }
