@@ -8,6 +8,13 @@
       "when": 1768398438974,
       "tag": "0000_add_cart_table",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1768472118550,
+      "tag": "0001_add_cart_item_table",
+      "breakpoints": true
     }
   ]
 }
