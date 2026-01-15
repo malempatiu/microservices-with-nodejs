@@ -1,6 +1,8 @@
 import { CreateProductDto } from "@/dtos/ProductDto";
 import { ICatalogRepository } from "@/interface/ICatalogRepository";
 import { ICatalogService } from "@/interface/ICatalogService";
+import { AppError } from "@/utils/error";
+import { STATUS_CODES } from "@/utils/status-codes";
 
 class CatalogService implements ICatalogService {
   private readonly catalogRepo: ICatalogRepository;
@@ -12,7 +14,7 @@ class CatalogService implements ICatalogService {
   createProduct = async (dto: CreateProductDto) => {
     const result = await this.catalogRepo.create(dto);
     if (!result?.id) {
-      throw new Error('Unable to create product!');
+      throw new AppError(STATUS_CODES.INTERNAL_ERROR, 'Unable to create product!');
     }
     return result;
   }
@@ -27,7 +29,7 @@ class CatalogService implements ICatalogService {
   getProduct = async (id: number) => {
     const result = await this.catalogRepo.findById(id);
     if (!result) {
-      throw new Error('Product not found!')
+      throw new AppError(STATUS_CODES.BAD_REQUEST, 'Product not found!')
     }
 
     return result;

@@ -1,6 +1,5 @@
 import express, {Express} from 'express';
 import { IRouter } from './controllers/types';
-import { prisma } from './lib/prisma';
 import { ErrorMiddleware } from './middleware/ErrorMiddleware';
 import { httpLogger, logger } from './utils/logger';
 
@@ -15,7 +14,7 @@ class App {
     this.port = port;
     this.initializeMiddleWares();
     this.initializeRouters(controllers);
-    this.initializeErrorMiddleWare();
+    this.initializeErrorMiddleware();
   }
 
   initializeMiddleWares = () => {
@@ -37,14 +36,13 @@ class App {
 
     process.on('uncaughtException', async (err) => {
       logger.error(err);
-      await prisma.$disconnect()
       process.exit(1);
     })
   }
 
-  private initializeErrorMiddleWare = () => {
+   private initializeErrorMiddleware = () => {
     this.app.use(ErrorMiddleware.handler);
-  }
+  };
 }
 
 export {App};
