@@ -1,19 +1,17 @@
 import { config } from "./config/config";
 import { App } from "./App";
-import {OrderController} from "./controllers/OrderController";
-import {OrderService} from "./service/OrderService";
-import { OrderRepository } from "./repository/OrderRepository";
-import { CartRepository } from "./repository/CartRepository";
-import { CartService } from "./service/CartService";
-import { CartController } from "./controllers/CartController";
+import { logger } from "./utils/logger";
 
 
-const app = new App(
-  config.port, 
-  [
-    new OrderController(new OrderService(new OrderRepository())),
-    new CartController(new CartService(new CartRepository())),
-  ]
-)
+async function bootstrap() {
+  try {
+    const app = new App(config.port)
 
-app.startServer();
+    await app.startServer();
+  } catch (error) {
+    logger.error(`Failed to start application: ${error}`);
+    process.exit(1);
+  }
+}
+
+bootstrap();

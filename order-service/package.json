@@ -19,6 +19,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@confluentinc/kafka-javascript": "^1.8.0",
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
