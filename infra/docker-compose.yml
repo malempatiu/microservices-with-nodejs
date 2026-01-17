@@ -42,7 +42,66 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.8.3
+    container_name: kafka
+    ports:
+      - "9092:9092"
+
+    environment:
+      # To enable KRaft mode which is a kafka built in system for managing metadata without zookeeper
+      # and also to manage cluster coordination internally like managing kafka brokers etc...
+      KAFKA_KRAFT_MODE: 'true'
+
+      # Why below to IDs?
+      # Answer: Kafka designed to run as a cluster made up of multiple nodes(brokers)
+      #  - brokers store and manage data(events which are produced and consumed))
+      #  - and brokers organized the data into topics and partitions for scalability and fault tolerance
+      # When kafka is deployed to production environment it is common to have multiple kafka brokers running together as a cluster
+      # Kafka as a cluster holds an ID which will be shared by all brokers in the cluster.
+      # One of the broker in the cluster will act as a controller. The controller broker is responsible for managing the cluster state
+      # and reassigning partitions when brokers go offline or come online and other cluster administration tasks.
+      # At any given time only one broker can be the active controller. When a controller broker fails another broker is elected as the new controller.
+      # The KAFKA_CLUSTER_ID is a unique identifier for the kafka cluster.
+      # The KAFKA_NODE_ID is a unique identifier for each broker(node) within the kafka cluster. Here we have only one broker so we set it to 1.
+      # These IDs are essential for kafka to function properly in a clustered environment.
+      CLUSTER_ID: '1L6g7nGhU-eAKfL--X25wo'
+      # Id (integer)
+      KAFKA_NODE_ID: 1
+
+      # We are setting the process roles to both broker and controller because in KRaft mode
+      # a single kafka instance can act as both a broker and a controller.
+      KAFKA_PROCESS_ROLES: broker,controller
+      # The KAFKA_CONTROLLER_QUORUM_VOTERS specifies the list of voters in the controller quorum.
+      # In KRaft mode, this is used to define which brokers are eligible to participate in controller elections.
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      # The KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR sets the replication factor for the internal offsets topic which holds metadata.
+      # In KRaft mode, since there is no Zookeeper, this setting is crucial to ensure that the offsets topic is replicated appropriately across the brokers.
+      # How it works: Kafka uses an internal topic called the offsets topic to store consumer group offsets which means kafka keeps track of which messages(events) from which topic have been consumed by which consumer groups.
+      # Here we have only one broker so we set the replication factor to 1 which means there is only one copy of the offsets topic data without backup.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+      # Listener configurations. 
+      # Listeners are endpoints where kafka brokers listen for incoming connections from clients(producers and consumers) and other brokers.
+      # - PLAINTEXT listener is used for regular client-broker communication. That means producers and consumers connect to the kafka broker using this listener to send and receive messages(events).
+      # - CONTROLLER listener is used for inter-broker communication related to controller functions. This listener is specifically for communication between brokers in the cluster for tasks like leader elections and partition management.
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      # Advertised listeners are the addresses that the broker advertises to clients and other brokers for connecting to it.
+      # Here we set the advertised listener for PLAINTEXT to localhost:9092 so that clients can connect to the broker using this address.
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      # Specify which listener is used for controller communication. Here we set it to CONTROLLER. 
+      # This tells the broker to use the CONTROLLER listener for inter-broker controller communication.
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      # Log directory where kafka stores its data files(events/messages), broker logs, and controller metadata and soon on the machine it's running.
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+
+    volumes:
+      - kafka_kraft:/var/lib/kafka/data
+
 
 volumes:
   catalog_data:
   order_data:
+  kafka_kraft:
