@@ -61,7 +61,13 @@ class App {
       throw new Error('MessageBroker not initialized');
     }
     const controllers = [
-      new OrderController(new OrderService(new OrderRepository()), this.messageBroker),
+      new OrderController(
+        new OrderService(
+          new OrderRepository(),
+          new CartRepository(),
+          this.messageBroker
+        )
+      ),
       new CartController(new CartService(new CartRepository())),
     ]
     controllers.forEach((controller) => {

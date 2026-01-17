@@ -63,6 +63,24 @@ class CartRepository implements ICartRepository {
     return result as CartDto;
   }
 
+   findByCustomerId = async (id: number): Promise<CartDto> => {
+    const result = await dDB.query.cartTable.findFirst(
+      {
+        where: (cartTable, {eq}) => (eq(cartTable.customerId, id)),
+        with: {
+          cartItems: true,
+        }
+      }
+    )
+
+    if (!result) {
+      logger.error('Cart not found!');
+      throw new AppError(STATUS_CODES.BAD_REQUEST, 'Cart not found!');
+    }
+
+    return result as CartDto;
+  }
+
   findItem = async (id: number): Promise<CartItem> => {
     const result = await dDB.query.cartItemsTable.findFirst(
       {

@@ -1,9 +1,9 @@
-import { OrderModel } from "@/models/OrderModel";
+import { OrderDto, OrderRequestDto } from "@/dtos/OrderDto";
 
 export interface IOrderRepository {
-  create(data: any): Promise<OrderModel>;
-  find(limit: number, offset: number): Promise<OrderModel[]>;
-  findById(id: number): Promise<OrderModel | null>;
-  update(id: number, data: any): Promise<OrderModel>;
+  create(data: OrderRequestDto): Promise<OrderDto>;
+  find(limit: number, offset: number): Promise<OrderDto[]>;
+  findById(id: number): Promise<OrderDto | null>;
+  update(id: number, data: any): Promise<OrderDto>;
   delete(id: number): Promise<void>;
 }

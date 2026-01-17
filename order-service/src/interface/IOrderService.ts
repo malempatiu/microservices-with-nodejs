@@ -1,8 +1,8 @@
-import { OrderModel } from "@/models/OrderModel";
+import { OrderDto } from "@/dtos/OrderDto";
 
 export interface IOrderService {
-  createOrder(payload: any): Promise<OrderModel>;
-  getOrder(id: number): Promise<OrderModel>;
-  updateOrder(id: number, payload: any): Promise<OrderModel>;
+  createOrder(customerId: number): Promise<OrderDto>;
+  getOrder(id: number): Promise<OrderDto>;
+  updateOrder(id: number, payload: any): Promise<OrderDto>;
   deleteOrder(id: number): Promise<boolean>;
 }
