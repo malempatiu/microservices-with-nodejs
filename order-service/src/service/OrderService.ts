@@ -1,5 +1,6 @@
 import { IOrderRepository } from "@/interface/IOrderRepository";
 import { IOrderService } from "@/interface/IOrderService";
+import { MessageType } from "@/message-broker/types";
 import { AppError } from "@/utils/error";
 import { STATUS_CODES } from "@/utils/status-codes";
 
@@ -37,6 +38,10 @@ class OrderService implements IOrderService {
     const product = await this.getOrder(id);
     await this.orderRepo.delete(product.id!);
     return true;
+  }
+
+  static handleSubscription = async (message: MessageType) => {
+    console.log(message);
   }
 }
 

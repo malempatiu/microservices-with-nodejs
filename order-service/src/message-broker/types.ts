@@ -10,3 +10,9 @@ export type ProduceMessageRecord = {
   headers: Record<string, any>;
   message: Record<string, any>;
 }
+
+export type MessageType = {
+  headers?: Record<string, any>;
+  event: EVENT_TYPE;
+  data: Record<string, any>;
+}

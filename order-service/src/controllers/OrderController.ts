@@ -30,9 +30,8 @@ class OrderController {
       event: 'create_order',
       headers: {},
       message: {
-        orderId: 1,
-        productId: 2,
-        customerId: 3
+        productId: req.body.productId,
+        customerId: req.body.customerId
       }
     })
     res.status(201).json({'message': req.body})

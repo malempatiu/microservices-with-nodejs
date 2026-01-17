@@ -2,9 +2,12 @@ import { Producer } from "./kafka/producer/Producer";
 import { config } from "@/config/config";
 import { BootstrapTopics } from "./kafka/BootstrapTopics";
 import { logger } from "@/utils/logger";
+import { Consumer } from "./kafka/consumer/Consumer";
+import { OrderService } from "@/service/OrderService";
 
 class MessageBroker {
    private producer?: Producer;
+   private consumer?: Consumer;
    private healthy: boolean = false;
 
   async start(): Promise<void> {
@@ -21,9 +24,9 @@ class MessageBroker {
       await this.producer.connect();
 
       // Initialize and connect consumer (if needed)
-      // this.consumer = new Consumer();
-      // await this.consumer.connect();
-      // await this.consumer.subscribe(['OrderEvents']);
+      this.consumer = new Consumer();
+      await this.consumer.connect();
+      await this.consumer.subscribe(['OrderEvents'], OrderService.handleSubscription);
 
       this.healthy = true;
       logger.info('Message broker started successfully');
@@ -38,9 +41,9 @@ class MessageBroker {
     try {
       logger.info('Stopping message broker...');
 
-      // if (this.consumer) {
-      //   await this.consumer.disconnect();
-      // }
+      if (this.consumer) {
+        await this.consumer.disconnect();
+      }
 
       if (this.producer) {
         await this.producer.disconnect();
@@ -56,8 +59,8 @@ class MessageBroker {
 
   isHealthy = (): boolean => {
     const producerHealthy = this.producer?.isHealthy() ?? false;
-    // const consumerHealthy = this.consumer?.isHealthy() ?? false;
-    this.healthy = producerHealthy;
+    const consumerHealthy = this.consumer?.isHealthy() ?? false;
+    this.healthy = producerHealthy && consumerHealthy;
     return this.healthy;
   }
 
