@@ -1,39 +1,71 @@
 import { Producer } from "./kafka/producer/Producer";
 import { config } from "@/config/config";
 import { BootstrapTopics } from "./kafka/BootstrapTopics";
-import { ProduceMessageRecord } from "./types";
+import { logger } from "@/utils/logger";
 
 class MessageBroker {
-  private readonly producer: Producer;
-  constructor() {
-    this.producer = new Producer();
-  }
+   private producer?: Producer;
+   private healthy: boolean = false;
 
-  start = async () => {
-    if (config.nodeEnv === 'development' && config.kafka.topicsBootstrap) {
-      await BootstrapTopics.create(['OrderEvents']);
+  async start(): Promise<void> {
+    try {
+      logger.info('Starting message broker...');
+
+      // Bootstrap topics
+      if (config.nodeEnv === 'development' && config.kafka.topicsBootstrap) {
+        await BootstrapTopics.create(['OrderEvents']);
+      }
+
+      // Initialize and connect producer
+      this.producer = new Producer();
+      await this.producer.connect();
+
+      // Initialize and connect consumer (if needed)
+      // this.consumer = new Consumer();
+      // await this.consumer.connect();
+      // await this.consumer.subscribe(['OrderEvents']);
+
+      this.healthy = true;
+      logger.info('Message broker started successfully');
+    } catch (error) {
+      this.healthy = false;
+      logger.error(`Failed to start message broker: ${error}`);
+      throw error;
     }
-    await this.producer.connect();
-    // TODO: connect to consumer and subscribe
   }
 
-  stop = async () => {
-    await this.producer.disconnect();
-    // TODO: disconnect consumer and related stuff
-  }
+   async stop(): Promise<void> {
+    try {
+      logger.info('Stopping message broker...');
 
-  private getHealthStatus = (): boolean => {
-    const producerHealthy = this.producer?.isHealthy() ?? false;
-    // const consumerHealthy = this.consumer?.isHealthy() ?? false;
-    return producerHealthy //&& consumerHealthy,
+      // if (this.consumer) {
+      //   await this.consumer.disconnect();
+      // }
+
+      if (this.producer) {
+        await this.producer.disconnect();
+      }
+
+      this.healthy = false;
+      logger.info('Message broker stopped successfully');
+    } catch (error) {
+      logger.error(`Error stopping message broker: ${error}`);
+      throw error;
+    }
   }
 
   isHealthy = (): boolean => {
-    return this.getHealthStatus();
+    const producerHealthy = this.producer?.isHealthy() ?? false;
+    // const consumerHealthy = this.consumer?.isHealthy() ?? false;
+    this.healthy = producerHealthy;
+    return this.healthy;
   }
 
-  sendMessage = async (data: ProduceMessageRecord) => {
-    await this.producer.publish(data);
+  getProducer(): Producer {
+    if (!this.producer) {
+      throw new Error('Producer not initialized. Call start() first.');
+    }
+    return this.producer;
   }
 }
 

@@ -25,7 +25,7 @@ class OrderController {
     res: Response, 
     _next: NextFunction
   ) => {
-    await this.messageBroker.sendMessage({
+    await this.messageBroker.getProducer().publish({
       topic: 'OrderEvents',
       event: 'create_order',
       headers: {},
